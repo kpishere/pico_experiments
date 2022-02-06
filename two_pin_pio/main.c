@@ -4,12 +4,10 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#include <stdio.h>
-
-#include "pico/stdlib.h"
 #include "hardware/pio.h"
 #include "hardware/dma.h"
 #include "hardware/irq.h"
+
 #include "stepper.pio.h"
 
 #define DELAY_ADJUST 0.1329
