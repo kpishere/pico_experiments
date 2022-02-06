@@ -1,0 +1,79 @@
+;
+; Byte stream carries three values (from MSB to LSB in a 64-bit stream)
+;
+;   63-32: 32 bit number indicating the number of pulses
+;   31- 1: 31 bit number indicating delay by clock cycles
+;       0: 1/0 to Indicate stepper direction
+;
+; System clock and peripherals expected to be set to 48Mhz 
+; with set_sys_clock_48mhz() and each clock about 20.8 ns
+;
+.program stepper
+.side_set 1
+
+; Time delay from Direction change to a Step pulse - 20us
+.define public Tdp 1
+; Step signal high pulse width
+.define public Tpw 13 
+
+read_fifo:
+    pull block   side 0 ; Pull Tx FIFO into OSR (32 bits)
+    out PINS,1   side 0 ; One LSB of OSR to Set Pin
+        ; - stepper direction pin, Need 20 ns delay from here to step pulse 
+    mov x, osr   side 0 [Tdp - 1]; Copy remaining to X for count of pulses
+    pull block   side 0 ; Pull Tx FIFO into OSR (32 bits)
+pulse_begin:
+    mov y, osr   side 0 ; Copy remaining OSR to Y 
+    jmp !y read_fifo side 0
+    nop          side 1 [Tpw - 1] ; We are clear to send step pulse
+        ; and delay - Need 100 ns delay here
+/*
+    jmp !osre pulse_begin side 0 ; If delay not zero, do pulse 
+    jmp read_fifo side 0 ; If pulse duration zero, go back and read next pair
+pulse_begin:
+    nop          side 1 [Tpw - 1] ; We are clear to send step pulse
+        ; and delay - Need 100 ns delay here
+    mov y, osr   side 0 ; Copy remaining OSR to Y 
+*/
+pulse_delay:
+    jmp y-- pulse_delay side 0 ; Set step pin low,
+        ; pulse delay, jump out of loop if Y zero
+    jmp x-- pulse_begin side 0  ; Perform next count pulse
+
+% c-sdk {
+/* Helper function to set up the PIO Stepper port
+ * step pin -  pin
+ * dir pin - pin + 1
+ */
+void stepper_program_init(PIO pio, uint sm, uint offset, uint pin) {
+    pio_sm_config c = stepper_program_get_default_config(offset);
+
+    // Map the state machine's OUT pin group to one pin, namely the `pin`
+    // parameter to this function.
+    sm_config_set_out_pins(&c, pin+1, 1);
+    sm_config_set_sideset_pins(&c, pin);
+
+    // Set this pin's GPIO function (connect PIO to the pad)
+    pio_gpio_init(pio, pin);
+    pio_gpio_init(pio, pin+1);
+
+    // Set the pin direction to output at the PIO
+    pio_sm_set_consecutive_pindirs(pio, sm, pin, 2, true);
+
+    // Double up FIFIO for All output - FIFO Tx is now 64 bits
+    sm_config_set_fifo_join(&c, PIO_FIFO_JOIN_TX);
+
+    // Set PIO speed to system clock speed 
+    sm_config_set_clkdiv(&c, 1u);
+
+    // Shift Right in OSR so LSB is used for Data Direction Pin
+    // No autopull as we use OSR to hold a value to reset Y
+    // Threashold for autopull set to zero
+    sm_config_set_out_shift(&c, true, false, 32); 
+
+    // Initialize
+    pio_sm_init(pio, sm, offset, &c); 
+    // Enable (it will be waiting for FIFO input)
+    pio_sm_set_enabled(pio, sm, true);
+}
+%}
