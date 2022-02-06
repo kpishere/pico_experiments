@@ -21,7 +21,7 @@
 // 1/0 for step direction, second word has the delay in PIO clock
 // ticks. Timing is consistantly about 15% off but porportionally 
 // consistant.
-#define STEP_PROFILE_WORDS (12 * 2) 
+#define STEP_PROFILE_WORDS (64 * 2) 
 int32_t step_profile[] = {
 	CALC_STEP_DIR(1,0), CALC_STEP_DELAY(48000),   // 999.3us, 1 step
 	CALC_STEP_DIR(1,0), CALC_STEP_DELAY(24000),   // 499.72us
@@ -115,7 +115,7 @@ int main() {
     uint offset = pio_add_program(pio, &stepper_program);
     stepper_program_init(pio, sm, offset, STEPPER_STEP_PIN);
 
-#if false
+#if true
     // Configure a channel to write the same word (32 bits) repeatedly to pio
     // SM0's TX FIFO, paced by the data request signal from that peripheral.
     dma_chan = dma_claim_unused_channel(true);
@@ -141,7 +141,9 @@ int main() {
     irq_set_enabled(DMA_IRQ_0, true);
 
     // Manually call the handler once, to trigger the first transfer
+    gpio_put(TRIGGER_PIN, 1);
     dma_handler();
+    gpio_put(TRIGGER_PIN, 0);
 #else
     //pio_sm_clear_fifos(pio, sm);
     //pio_sm_restart(pio, sm);
