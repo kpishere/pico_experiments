@@ -25,6 +25,21 @@ Start openocd in a terminal window with :
 openocd -f ../pico.cfg
 
 Start gdb with the elf file that you'd loaded on another terminal
-window with :
+window with and run the macro shown with it :
 
-gdb ./hello_usb.elf
+gdb -x ../gdbinit ./hello_usb.elf
+
+# Macros in gdbinit
+
+With all wired and hooked up correctly, you can issue command 
+
+mri
+
+to renitialize the monitor reset the device, then
+
+cll
+
+to perform compile, link load.  At that point program will be loaded
+and ready to start, set up whatever monitor tool (like logic analyzer
+or breakpoints etc.) then press 'c [press enter key]' and your program
+runs.  This is a very fast debug cycle with PIO.

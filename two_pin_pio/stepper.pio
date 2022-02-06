@@ -15,6 +15,8 @@
 .define public Tdp 1
 ; Step signal high pulse width
 .define public Tpw 13 
+; Delay adjust for 48_000 cycles to equal 1ms
+.define public Td 2
 
 read_fifo:
     pull block   side 0 ; Pull Tx FIFO into OSR (32 bits)
@@ -36,9 +38,10 @@ pulse_begin:
     mov y, osr   side 0 ; Copy remaining OSR to Y 
 */
 pulse_delay:
+    nop           side 0 [Td - 1] ; delay adjustment
     jmp y-- pulse_delay side 0 ; Set step pin low,
         ; pulse delay, jump out of loop if Y zero
-    jmp x-- pulse_begin side 0  ; Perform next count pulse
+    jmp x-- pulse_begin side 0 ; Perform next count pulse
 
 % c-sdk {
 /* Helper function to set up the PIO Stepper port
