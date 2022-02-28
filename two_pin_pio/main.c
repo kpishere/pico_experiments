@@ -113,7 +113,7 @@ int main() {
     uint offset = pio_add_program(pio, &stepper_program);
     stepper_program_init(pio, sm, offset, STEPPER_STEP_PIN);
 
-#if true
+#if false
     // Configure a channel to write the same word (32 bits) repeatedly to pio
     // SM0's TX FIFO, paced by the data request signal from that peripheral.
     dma_chan = dma_claim_unused_channel(true);
