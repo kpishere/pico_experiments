@@ -43,3 +43,6 @@ to perform compile, link load.  At that point program will be loaded
 and ready to start, set up whatever monitor tool (like logic analyzer
 or breakpoints etc.) then press 'c [press enter key]' and your program
 runs.  This is a very fast debug cycle with PIO.
+
+## Physical setup
+![PicoWJLink](https://user-images.githubusercontent.com/25204173/155986869-b5554688-71dc-4332-be26-15c48e7cb3f6.jpg)
