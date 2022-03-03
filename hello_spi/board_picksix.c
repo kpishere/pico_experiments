@@ -37,7 +37,7 @@ void gpio_callback_handler(uint gpio, uint32_t events) {
 
         cs_select(GPIO_CS10_PIN);
         XRA_MSG(XRA_READ, 1, XRA_ISR, data_p1);
-        spi_read16_blocking (spi0, (const uint16_t )data_p0, (uint16_t *)&(data_p1) ,XRA_MSG_SIZE);
+        spi_read16_blocking (spi0, (const uint16_t )data_p1, (uint16_t *)&(data_p1) ,XRA_MSG_SIZE);
         cs_deselect(GPIO_CS10_PIN);
 
         int_mask = ((data_p1 & 0x00FF) << 8) | (data_p0 & 0x00FF);
@@ -50,7 +50,7 @@ void gpio_callback_handler(uint gpio, uint32_t events) {
 
         cs_select(GPIO_CS10_PIN);
         XRA_MSG(XRA_READ, 1, XRA_GSR, data_p1);
-        spi_read16_blocking (spi0, (const uint16_t )data_p0, (uint16_t *)&(data_p1) ,XRA_MSG_SIZE);
+        spi_read16_blocking (spi0, (const uint16_t )data_p1, (uint16_t *)&(data_p1) ,XRA_MSG_SIZE);
         cs_deselect(GPIO_CS10_PIN);
 
         // Act on interrupts

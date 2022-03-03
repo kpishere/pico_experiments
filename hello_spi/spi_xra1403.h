@@ -73,6 +73,6 @@
 
 /* Maximum clock speed XRA
  */
-#define MAX_XRA_CLK 12E6 /* 26 Mhz is max - lower speed is more wiring tolerent */
+#define MAX_XRA_CLK 26E6 /* 26 Mhz is max - lower speed is more wiring tolerent */
 
 #endif // spi_xra1403.h

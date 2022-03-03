@@ -62,7 +62,8 @@ int main() {
 
 
 #if false
-    // Set up interrupt 
+    // Set up interrupt - From interrupt causing event to end of transmission for clearing interrupt
+    // it is 12us at 26Mhz.  Handling requires reading two registers and writing to two registers
     cs_select(GPIO_CS10_PIN);
 
     // Read pin config status
