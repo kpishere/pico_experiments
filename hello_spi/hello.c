@@ -60,6 +60,8 @@ int main() {
     // Interrupt and response time 
     output_data = 0x0000;
 
+
+#if false
     // Set up interrupt 
     cs_select(GPIO_CS10_PIN);
 
@@ -68,7 +70,6 @@ int main() {
     spi_read16_blocking (spi0, (const uint16_t )output_data, (uint16_t *)&(output_data) ,XRA_MSG_SIZE);
     cs_deselect(GPIO_CS10_PIN);
 
-#if false
     // Set pullup
     output_data = 0x0000;
     XRA_SET_PIN(output_data,pin_button,XRA_PULEN);
@@ -82,11 +83,30 @@ int main() {
 #endif
 
     cs_select(GPIO_CS10_PIN);
+    // Rising edge
+    XRA_SET_PIN(output_data,pin_button,XRA_INENABLE);
+    XRA_MSG(XRA_WRITE, XRA_PIN2BANK(pin_button), XRA_REIR, output_data);
+    spi_write16_blocking (spi0, (const uint16_t *)&output_data,XRA_MSG_SIZE);
+    cs_deselect(GPIO_CS10_PIN);
+
+    cs_select(GPIO_CS10_PIN);
     // Enable interrupts
     XRA_SET_PIN(output_data,pin_button,XRA_INENABLE);
     XRA_MSG(XRA_WRITE, XRA_PIN2BANK(pin_button), XRA_IER, output_data);
     spi_write16_blocking (spi0, (const uint16_t *)&output_data,XRA_MSG_SIZE);
     cs_deselect(GPIO_CS10_PIN);
+
+    // Clear interrupts
+    cs_select(GPIO_CS10_PIN);
+    XRA_MSG(XRA_READ, 0, XRA_GSR, output_data);
+    spi_read16_blocking (spi0, (const uint16_t )output_data, (uint16_t *)&(output_data) ,XRA_MSG_SIZE);
+    cs_deselect(GPIO_CS10_PIN);
+
+    cs_select(GPIO_CS10_PIN);
+    XRA_MSG(XRA_READ, 1, XRA_GSR, output_data);
+    spi_read16_blocking (spi0, (const uint16_t )output_data, (uint16_t *)&(output_data) ,XRA_MSG_SIZE);
+    cs_deselect(GPIO_CS10_PIN);
+
 
     cs_select(GPIO_CS10_PIN);
     // Read interrupt status
@@ -94,12 +114,6 @@ int main() {
     XRA_MSG(XRA_READ, XRA_PIN2BANK(pin_button), XRA_IER, output_data);
     spi_read16_blocking (spi0, (const uint16_t )output_data, (uint16_t *)&(output_data) ,XRA_MSG_SIZE);
     cs_deselect(GPIO_CS10_PIN);
-
-    cs_select(GPIO_CS10_PIN);
-    // Rising edge
-    XRA_SET_PIN(output_data,pin_button,XRA_INENABLE);
-    XRA_MSG(XRA_WRITE, XRA_PIN2BANK(pin_button), XRA_REIR, output_data);
-    spi_write16_blocking (spi0, (const uint16_t *)&output_data,XRA_MSG_SIZE);
 
 
 #if false
@@ -113,7 +127,6 @@ int main() {
     spi_write16_blocking (spi0, (const uint16_t *)&output_data,XRA_MSG_SIZE);
 #endif
 
-    cs_deselect(GPIO_CS10_PIN);
 
     // Set un-triggered data value
     XRA_SET_PIN(output_data,pin,1);
