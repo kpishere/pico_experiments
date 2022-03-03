@@ -24,4 +24,7 @@ target_link_libraries(hello_spi PRIVATE
         hardware_spi
         )
 
+pico_enable_stdio_usb(hello_spi 1)
+pico_enable_stdio_uart(hello_spi 0)
+
 pico_add_extra_outputs(hello_spi)

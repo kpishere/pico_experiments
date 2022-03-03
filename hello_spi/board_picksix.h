@@ -11,14 +11,32 @@
 #include "spi_xra1403.h"
 #include "hardware/spi.h"
 
-#define SPI0_GPIO_CS10_PIN 5
-#define SPI0_GPIO_CS11_PIN 1 
-#define SPI0_GPIO_CS12_PIN 16
+#if true
+#define AZSMZ_12864_LCD 
+#endif
 
-#define SPI0_SPI_RX_PIN 4
-#define SPI0_SPI_SCK_PIN 2
-#define SPI0_SPI_TX_PIN 3
-#define SPI0_INTCS10_PIN 0 
+// PICO GPIO Pins
+#define INTCS10_PIN 0 
+#define GPIO_CS10_PIN 5
+#define GPIO_CS11_PIN 1 
+#define GPIO_CS12_PIN 16
+
+#define SPI0_SCK_PIN 2
+#define SPI0_TX_PIN 3
+#define SPI0_RX_PIN 4
+
+// XRA1403 GPIO Expander Pins
+#define SPI0_SPI_P1_PIN 6
+#define SPI0_SPI_SEN1_PIN 7
+#define SPI0_SPI_P2_PIN 8
+#define SPI0_SPI_SEN2_PIN 9
+#define SPI0_SPI_P3_PIN 10
+#define SPI0_SPI_SEN3_PIN 11
+
+#define SPI0_SPI_HB1_PIN 12
+#define SPI0_SPI_HT1_PIN 13
+#define SPI0_SPI_HT2_PIN 14
+#define SPI0_SPI_HT3_PIN 15
 
 void cs_select(uint cs);
 

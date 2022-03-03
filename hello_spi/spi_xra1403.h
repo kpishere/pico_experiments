@@ -1,11 +1,11 @@
-/*  Interface defintion for SPI XRA1403 GPIO Expansion device
+/*  Interface defintion for SPI XRA GPIO Expansion device
  *  
  *  Copyright (C) 2022  Kevin Peck <kevindpeck@gmail.com>
  * 
  *  This file may be distributed under the terms of the GNU GPLv3 license.
  */
-#ifndef __SPI_XRA1403_H
-#define __SPI_XRA1403_H
+#ifndef __SPI_XRA_H
+#define __SPI_XRA_H
 
 /* SPI Conventions for device
  *
@@ -22,51 +22,57 @@
  * - Read operation : first 8 bits are control, second 8 bits are read data
  */
  
-#define XRA1403_GSR 0x00u // read-only GPIO State P0-7
-#define XRA1403_OCR 0x02u // read-write Output control P0-7 default 0xFF
-#define XRA1403_PIR 0x04u // read-write Input polarity inversion P0-7 default 0x00
-#define XRA1403_GCR 0x06u // read-write GPIO configuration for P0-7 default 0xFF
-#define XRA1403_PUR 0x08u // read-write Input internal pull-up resistor enable/disabele P0-7 default 0x00
-#define XRA1403_IER 0x0Au // read-write Input interrupt enable P0-7 default 0x00
-#define XRA1403_TSCR 0x0Cu // read-write Output three-state control P0-7 default 0x00
-#define XRA1403_ISR 0x0Eu // read-only Input interrupt status P0-7 default 0x00
-#define XRA1403_REIR 0x10u // read-write Input rising edge interrupt enable P0-7 default 0x00
-#define XRA1403_FEIR 0x12u // read-write Input falling edge interrupt enable P0-7 default 0x00
-#define XRA1403_IFR 0x14u // read-write Input filter enable/disable P0-7 default 0xFF
+/* XRA registers */
+#define XRA_GSR   0x00 /* GPIO State - Read-Only */
+#define XRA_OCR   0x04 /* Output Control - Read/Write */
+#define XRA_PIR   0x08 /* Input Polarity Inversion - Read/Write */
+#define XRA_GCR   0x0C /* GPIO Configuration - Read/Write */
+#define XRA_PUR   0x10 /* Input Internal Pull-up Resistor Enable/Disable - Read/Write */
+#define XRA_IER   0x14 /* Input Interrupt Enable - Read/Write */
+#define XRA_TSCR  0x18 /* Output Three-State Control - Read/Write */
+#define XRA_ISR   0x1C /* Input Interrupt Status - Read-Only */
+#define XRA_REIR  0x20 /* Input Rising Edge Interrupt Enable - Read/Write */
+#define XRA_FEIR  0x24 /* Input Falling Edge Interrupt Enable - Read/Write */
+#define XRA_IFR   0x28 /* Input Filter Enable/Disable - Read/Write */
 
-#define XRA1403_WRITE 0x00
-#define XRA1403_READ 0x01
+#define XRA_READ 0x01
+#define XRA_WRITE 0x00
 
-#define XRA1403_OUTPUT 0x00
-#define XRA1403_INPUT 0x01
+#define XRA_OUTPUT 0x00
+#define XRA_INPUT 0x01
 
-#define XRA1403_INDISABLE 0x00
-#define XRA1403_INENABLE 0x01
+#define XRA_INDISABLE 0x00
+#define XRA_INENABLE 0x01
+
+#define XRA_PULDIS 0x00
+#define XRA_PULEN 0x01
 
 /* Return bank number from provided pin number P0-15
  */
-#define XRA1403_PIN2BANK(pin) (int)((pin) / 8)
+#define XRA_PIN2BANK(pin) ((pin) > 7)
 
 /* Update just one pin in data P0-15 */
-#define XRA1403_SET_PIN(data,pin,val)  \
-    (data) = ( ((val) & 0x01) ?  (data) | (0x01 << ((pin) % 8)) : (data) & ~(0x01 << ((pin) % 8)) )
+#define XRA_SET_PIN(data,pin,val)  \
+    (data) = ( ((val) & 0x01) ? (data) | (0x01 << ((pin) % 8)) : (data) & ~(0x01 << ((pin) % 8)) )
 
-/* Prepare packet for XRA1403 - 16 bit
+/* Prepare packet for XRA - 16 bit
  *      rw: 0 - write, 1 - read
  *    bank: 0 - P0-1, 1 - P8-15
- * control: Command/control code - see enum XRA1403_CMD
+ * control: Command/control code - see enum XRA_CMD
  *    data: 8 bit / unsigned char
  */
-#define XRA1403_MSG(rw, bank, control, data) \
-    (data) = ((rw==XRA1403_WRITE ? 0x0000 : 0x8000) | (( ((control)<<8) & 0x1E00)|(bank>0 ? 0x0100 : 0x0000)) | (data) & 0x00FF)
+#define XRA_MSG(rw, bank, control, data) \
+    (data) = ((rw==XRA_WRITE ? 0x0000 : 0x8000) \
+    | ((( ((control)<<8) & 0x3F00)|(bank>0 ? 0x0200 : 0x0000))) \
+    | (data) & 0x00FF)
 
 /* Two byte message length
  */
-#define XRA1403_MSG_SIZE 1
-#define XRA1403_MSG_BITS 16
+#define XRA_MSG_SIZE 1
+#define XRA_MSG_BITS 16
 
-/* Maximum clock speed XRA1403
+/* Maximum clock speed XRA
  */
-#define MAX_XRA1403_CLK 2E6 /* 26 Mhz is max - lower speed is more wiring tolerent */
+#define MAX_XRA_CLK 12E6 /* 26 Mhz is max - lower speed is more wiring tolerent */
 
 #endif // spi_xra1403.h
