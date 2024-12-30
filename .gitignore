@@ -1,1 +1,12 @@
 build/
+CMakeCache.txt
+*/CMakeFiles/*
+Makefile
+*.cmake
+progress.marks
+*.bin
+*.out
+*.make
+*.o
+*.o.d
+*/tmp/*

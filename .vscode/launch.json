@@ -1,0 +1,81 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug hello_asm",
+            "request": "launch",
+            "type": "cortex-debug",
+            "cwd": "${workspaceRoot}",
+            "executable": "${workspaceFolder}/hello_asm/build/hello_asm.uf2",
+            "preLaunchTask": "Build binary",
+            "servertype": "openocd",
+            "gdbPath": "/usr/local/bin/arm-none-eabi-gdb",
+            // Connect to an already running OpenOCD instance
+            "gdbTarget": ":3333",
+            // If you have the Pico SDK installed, allows the
+            // display of the RP2040 CPU registers in VS Code
+            "svdFile": "${env:PICO_SDK_PATH}/src/rp2040/hardware_regs/rp2040.svd",
+            "runToEntryPoint": "main",
+            "preLaunchCommands": [
+                "monitor init",
+                "monitor reset init",
+                "monitor halt",
+            ],
+            // Work around for stopping at main on restart
+            "postRestartCommands": [
+                "break main",
+                "continue"
+            ],
+            /*
+            // NOTE requires openOCD 0.11.0+
+            "postLaunchCommands": [
+                "monitor rtt setup 0x20000054 0x30 \"SEGGER RTT\"",
+                "monitor rtt start",
+                "monitor rtt server start 8765 0",
+                // should span the *right* part of RAM
+                // use this at root of project to get this number:
+                //   rust-nm -S target/thumbv6m-none-eabi/debug/klipim | grep _SEGGER_RTT
+                //                "set print asm-demangle on",
+                //                "set backtrace limit 32",
+                //                "break DefaultHandler",
+                //                "break HardFault",
+                //                "define cll",
+                //                "target extended-remote :3333",
+                //                "load",
+                //                "monitor reset init",
+                //                "end",
+                //                "define mri",
+                //                "monitor reset init",
+                //                "end"
+                // In terminal window, run the following command to capture logging info :
+                //   nc localhost 8765 | defmt-print -e target/thumbv6m-none-eabi/debug/klipim
+                // If not working, process likely using port, use the following to identify process
+                //   lsof -i :8765
+            ],
+            */
+            "configFiles": [
+                // Absolute path to your ocd settings
+                "${userHome}/pico.ocd"
+            ],
+            // .. so use this instead of the interface in `configFiles`
+            "openOCDPreConfigLaunchCommands": [
+                //    "source [find /interface/jlink.cfg]",
+                //    "transport select swd",
+                //    "adapter speed 10000",
+                //    "source [find target/rp2040.cfg]"
+            ],
+            "showDevDebugOutput": "both", // Shows output of GDB, helpful when something is not working right
+        },
+        {
+            "cwd": "${workspaceRoot}",
+            "name": "Attach Debug",
+            "request": "attach",
+            "type": "cortex-debug",
+            "servertype": "external",
+            "gdbTarget": ":3333",
+            "executable": "${workspaceFolder}/hello_asm/build/hello_asm.elf",
+            "gdbPath": "/usr/local/bin/arm-none-eabi-gdb", // or gdb or multiarch-gdb
+            "svdFile": "${env:PICO_SDK_PATH}/src/rp2040/hardware_regs/rp2040.svd",
+        }
+    ]
+}

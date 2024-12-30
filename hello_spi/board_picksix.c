@@ -23,8 +23,11 @@ cs_deselect(uint cs) {
     asm volatile("nop \n nop \n nop");
 }
 
-extern volatile uint16_t output_data;
 void gpio_callback_handler(uint gpio, uint32_t events) {
+}
+
+extern volatile uint16_t output_data;
+void spi0_gpio_callback_handler(uint gpio, uint32_t events) {
     if(gpio == INTCS10_PIN && (events & GPIO_IRQ_LEVEL_LOW) ) {
         uint16_t data_p0 = 0x0000, data_p1 = 0x0000;
         uint16_t int_mask = 0x00;
@@ -94,6 +97,7 @@ spi_xra1403_init() {
         gpio_init(sen_pins[i]);
         gpio_set_dir(sen_pins[i], GPIO_IN);
         gpio_pull_up(sen_pins[i]);
+        gpio_set_irq_enabled_with_callback(sen_pins[i], GPIO_IRQ_LEVEL_LOW, true, &gpio_callback_handler);        
     }
 
     // Configure XRA SPI GPIO for PickSix
@@ -146,10 +150,15 @@ spi_xra1403_init() {
     cs_deselect(GPIO_CS10_PIN);
     }
 
-    // Configure/register handler for interupt pin 
-    gpio_set_function(INTCS10_PIN, GPIO_FUNC_SIO);
+    // Configure/register handler for interupt pin of GPIO Expander
+    gpio_init(INTCS10_PIN);
     gpio_set_dir(INTCS10_PIN, GPIO_IN);
     gpio_pull_up(INTCS10_PIN);
-    gpio_set_irq_enabled_with_callback(INTCS10_PIN, GPIO_IRQ_LEVEL_LOW, true, &gpio_callback_handler);
+    gpio_set_irq_enabled_with_callback(INTCS10_PIN, GPIO_IRQ_LEVEL_LOW, true, &spi0_gpio_callback_handler);
+
+#ifdef AZSMZ_12864_LCD
+    // Configure/register handler for GPIO_CS12_PIN when used for push button
+
+#endif
 }
 
