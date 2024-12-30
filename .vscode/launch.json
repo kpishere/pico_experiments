@@ -6,8 +6,8 @@
             "request": "launch",
             "type": "cortex-debug",
             "cwd": "${workspaceRoot}",
-            "executable": "${workspaceFolder}/hello_asm/build/hello_asm.uf2",
-            "preLaunchTask": "Build binary",
+            "executable": "${workspaceFolder}/hello_asm/build/hello_asm.elf",
+            "preLaunchTask": "Build hello_asm",
             "servertype": "openocd",
             "gdbPath": "/usr/local/bin/arm-none-eabi-gdb",
             // Connect to an already running OpenOCD instance

@@ -4,9 +4,10 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Build binary",
+            "label": "Build hello_asm",
             "type": "shell",
             "command": "make",
+            "options": {"cwd": "${workspaceFolder}/hello_asm/build"},
             "args": [
             ],
             "group": "build"
