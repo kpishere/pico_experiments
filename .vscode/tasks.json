@@ -12,5 +12,41 @@
             ],
             "group": "build"
         },
+        {
+            "label": "Build hex_calc",
+            "type": "shell",
+            "command": "make",
+            "options": {"cwd": "${workspaceFolder}/hex_calc/build"},
+            "args": [
+            ],
+            "group": "build"
+        },
+        {
+            "label": "Build flashled",
+            "type": "shell",
+            "command": "make",
+            "options": {"cwd": "${workspaceFolder}/flashled/build"},
+            "args": [
+            ],
+            "group": "build"
+        },
+        {
+            "label": "Build flashled2",
+            "type": "shell",
+            "command": "make",
+            "options": {"cwd": "${workspaceFolder}/flashled2/build"},
+            "args": [
+            ],
+            "group": "build"
+        },
+        {
+            "label": "Build timeint",
+            "type": "shell",
+            "command": "make",
+            "options": {"cwd": "${workspaceFolder}/timeint/build"},
+            "args": [
+            ],
+            "group": "build"
+        },
     ]
 }

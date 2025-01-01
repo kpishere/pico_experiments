@@ -5,7 +5,7 @@ main:
     mov r7, #0
     bl stdio_init_all
 loop:
-    ldr r0, =helloworld
+*    ldr r0, =helloworld
     add r7,#1
     mov r1,r7
     bl printf
