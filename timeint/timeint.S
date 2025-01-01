@@ -73,6 +73,10 @@ alarm_isr:
     mov r1, #1  @ for alarm 0
     str r1, [r2, #TIMER_INTR_OFFSET]
 
+    @ re-arm interrupt 
+    ldr r0, alarmtime   @ load next alarm time 
+    bl set_alarm0       @ set next allarm
+
     @ disable/enable leds base on state 
     ldr r2, =state  @ load address of state 
     ldr r3, [r2]    @ load value of state 
@@ -98,8 +102,6 @@ step3:
     str r3, [r2]    @ save state 0
     @ fall-thru to finish here 
 finish:
-    ldr r0, alarmtime   @ load next alarm time 
-    bl set_alarm0       @ set next allarm
     pop {pc}            @ return from interrupt
 
 set_alarm0_isr:
